@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MFU Clinical Tools</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;font-family:Tahoma,Arial,sans-serif;}
+
+.shell{display:flex;height:100vh;overflow:hidden;}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:200px;
+  flex-shrink:0;
+  background:#1e3a8a;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  transition:width .2s ease;
+  position:relative;
+}
+.sidebar.collapsed{
+  width:14px;
+  cursor:pointer;
+}
+.sidebar.collapsed:hover{background:#1d4ed8;}
+
+.sidebar-inner{
+  width:200px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  opacity:1;
+  transition:opacity .08s;
+}
+.sidebar.collapsed .sidebar-inner{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* subtle pill indicator on collapsed strip */
+.sidebar.collapsed::before{
+  content:'';
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:4px;
+  height:28px;
+  background:rgba(255,255,255,.3);
+  border-radius:2px;
+  pointer-events:none;
+}
+
+.sidebar-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 10px 8px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  flex-shrink:0;
+}
+.sidebar-logo{
+  font-size:11px;
+  font-weight:700;
+  color:rgba(255,255,255,.55);
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  white-space:nowrap;
+}
+.collapse-btn{
+  background:none;
+  border:none;
+  color:rgba(255,255,255,.55);
+  cursor:pointer;
+  font-size:13px;
+  padding:2px 5px;
+  border-radius:4px;
+  line-height:1;
+  flex-shrink:0;
+  transition:background .12s,color .12s;
+}
+.collapse-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+
+.menu{
+  list-style:none;
+  padding:8px 0;
+  flex:1;
+  overflow-y:auto;
+}
+.menu-item{
+  padding:9px 14px;
+  color:rgba(255,255,255,.78);
+  cursor:pointer;
+  font-size:13px;
+  white-space:nowrap;
+  border-left:3px solid transparent;
+  transition:background .12s,color .12s,border-color .12s;
+  user-select:none;
+}
+.menu-item:hover{background:rgba(255,255,255,.1);color:#fff;}
+.menu-item.active{
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  border-left-color:#93c5fd;
+  font-weight:600;
+}
+
+/* ── Content ── */
+.content{flex:1;overflow:hidden;}
+iframe{width:100%;height:100%;border:none;display:block;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="sidebar" id="sidebar" title="">
+    <div class="sidebar-inner">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">MFU Clinical Tools</span>
+        <button class="collapse-btn" id="collapseBtn" title="ย่อ sidebar">◀</button>
+      </div>
+      <ul class="menu" id="menu">
+        <li class="menu-item active" data-src="mfu-vte-prophylaxis.html">VTE Prophylaxis</li>
+        <!-- เพิ่มเมนูใหม่ได้ที่นี่:
+        <li class="menu-item" data-src="ชื่อไฟล์.html">ชื่อเมนู</li>
+        -->
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <iframe id="frame" src="mfu-vte-prophylaxis.html"></iframe>
+  </main>
+
+</div>
+<script>
+(function(){
+  var sidebar  = document.getElementById('sidebar');
+  var btn      = document.getElementById('collapseBtn');
+  var collapsed = false;
+
+  function setCollapsed(val){
+    collapsed = val;
+    sidebar.classList.toggle('collapsed', collapsed);
+    sidebar.title = collapsed ? 'คลิกเพื่อขยาย sidebar' : '';
+    btn.textContent = collapsed ? '▶' : '◀';
+    btn.title       = collapsed ? 'ขยาย sidebar' : 'ย่อ sidebar';
+  }
+
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    setCollapsed(true);
+  });
+
+  sidebar.addEventListener('click', function(){
+    if(collapsed) setCollapsed(false);
+  });
+
+  document.querySelectorAll('.menu-item').forEach(function(item){
+    item.addEventListener('click', function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.menu-item').forEach(function(m){
+        m.classList.remove('active');
+      });
+      item.classList.add('active');
+      document.getElementById('frame').src = item.dataset.src;
+    });
+  });
+})();
+</script>
+</body>
+</html>

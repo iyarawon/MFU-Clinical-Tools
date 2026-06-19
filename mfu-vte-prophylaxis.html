@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VTE Prophylaxis Assessment MFU - Caprini Auto Calculator</title>
+<style>
+:root{
+  --blue:#1d4ed8;
+  --green:#047857;
+  --red:#b91c1c;
+  --amber:#92400e;
+  --gray:#374151;
+  --light:#f8fafc;
+  --border:#cbd5e1;
+}
+html,body{height:100%;margin:0;overflow:hidden;}
+body{
+  font-family:Tahoma,Arial,sans-serif;
+  background:#eef2f7;
+  color:#111827;
+  line-height:1.4;
+  display:flex;
+  flex-direction:column;
+}
+.app{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  max-width:1400px;
+  margin:0 auto;
+  width:100%;
+  background:#fff;
+  box-shadow:0 0 40px rgba(15,23,42,.12);
+}
+/* ── Header ── */
+.app-header{
+  flex-shrink:0;
+  padding:5px 14px 4px;
+  background:#fff;
+  border-bottom:1px solid #e2e8f0;
+}
+.app-title{
+  text-align:center;
+  font-size:14px;
+  font-weight:bold;
+  margin:0 0 4px;
+  color:#1e3a8a;
+}
+.summary-bar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#eff6ff;
+  border:1px solid #93c5fd;
+  border-radius:8px;
+  padding:4px 10px;
+  flex-wrap:wrap;
+  font-size:11px;
+}
+.s-block{display:flex;flex-direction:column;align-items:flex-start;gap:1px;}
+.s-lbl{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;line-height:1;}
+.s-score{font-size:20px;font-weight:bold;color:var(--blue);line-height:1;}
+.s-sep{color:#bfdbfe;font-size:18px;align-self:center;}
+.s-rec{flex:1;min-width:160px;font-size:11px;color:#1e3a8a;line-height:1.3;}
+.warn-bar{display:flex;gap:4px;flex-wrap:wrap;padding:2px 10px 3px;min-height:0;}
+.warn-chip{font-size:10px;padding:1px 7px;border-radius:999px;font-weight:600;}
+.warn-chip.red{background:#fee2e2;color:#991b1b;}
+.warn-chip.amber{background:#fef3c7;color:#78350f;}
+/* ── Tab nav ── */
+.tab-nav{
+  flex-shrink:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:2px;
+  padding:5px 12px 0;
+  background:#f1f5f9;
+  border-bottom:2px solid var(--border);
+}
+.tab-btn{
+  background:#e2e8f0;
+  color:#374151;
+  border:1px solid var(--border);
+  border-bottom:none;
+  padding:5px 11px;
+  border-radius:6px 6px 0 0;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:600;
+  white-space:nowrap;
+  position:relative;
+  bottom:-2px;
+  transition:background .12s,color .12s;
+}
+.tab-btn:hover{background:#dbeafe;color:#1e3a8a;}
+.tab-btn.active{background:#fff;color:var(--blue);border-bottom:2px solid #fff;z-index:1;}
+/* ── Tab body ── */
+.tab-body{
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  position:relative;
+}
+.tab-panel{
+  display:none;
+  height:100%;
+  overflow-y:auto;
+  padding:10px 14px 8px;
+  box-sizing:border-box;
+}
+.tab-panel.active{display:block;}
+/* ── Content ── */
+h2{
+  margin:0 0 7px 0;
+  background:#e5e7eb;
+  border-left:5px solid var(--blue);
+  padding:5px 10px;
+  font-size:13px;
+  border-radius:0 6px 6px 0;
+}
+h3{margin:0 0 5px 0;font-size:12.5px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.card{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+  background:#fbfdff;
+}
+.card.score1{border-top:4px solid #60a5fa;}
+.card.score2{border-top:4px solid #34d399;}
+.card.score3{border-top:4px solid #f59e0b;}
+.card.score5{border-top:4px solid #ef4444;}
+label{
+  display:block;
+  margin:2px 0;
+  font-size:12px;
+  line-height:1.3;
+}
+input[type="text"],input[type="date"],input[type="time"],input[type="number"],select,textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:5px 7px;
+  font-family:inherit;
+  font-size:12px;
+  margin-top:2px;
+}
+textarea{min-height:52px;}
+input[type="checkbox"],input[type="radio"]{margin-right:5px;transform:scale(.9);}
+.small{font-size:11px;color:#4b5563;margin:4px 0 0;}
+.badge{
+  display:inline-block;padding:2px 7px;
+  border-radius:999px;font-weight:bold;font-size:11px;
+}
+.badge.green{background:#dcfce7;color:#166534;}
+.badge.amber{background:#fef3c7;color:#92400e;}
+.badge.red{background:#fee2e2;color:#991b1b;}
+.badge.blue{background:#dbeafe;color:#1d4ed8;}
+.alert{padding:7px 10px;border-radius:7px;margin:5px 0;font-size:12px;}
+.alert.red{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;}
+.alert.amber{background:#fffbeb;border:1px solid #fde68a;color:#78350f;}
+.alert.blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;}
+table{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px;}
+th,td{border:1px solid var(--border);padding:6px 8px;vertical-align:top;}
+th{background:#f1f5f9;}
+button{
+  background:var(--blue);color:white;border:0;
+  padding:7px 13px;border-radius:7px;cursor:pointer;
+  margin-right:6px;font-family:inherit;font-size:12px;
+}
+button.secondary{background:#6b7280;}
+button.danger{background:#b91c1c;}
+.actions{margin-top:10px;}
+/* ── Footer ── */
+.app-footer{
+  flex-shrink:0;
+  font-size:10px;
+  color:#374151;
+  border-top:1px solid #e5e7eb;
+  padding:4px 14px;
+  background:#f8fafc;
+  line-height:1.4;
+}
+@media(max-width:960px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  .tab-btn{font-size:10px;padding:4px 7px;}
+  html,body{overflow:auto;}
+  .app{height:auto;}
+  .tab-body{overflow:visible;height:auto;}
+  .tab-panel{height:auto;overflow:visible;}
+}
+/* ── Assessment Bar ── */
+.assess-bar{
+  flex-shrink:0;
+  background:#eff6ff;
+  border-top:2px solid #1d4ed8;
+}
+.assess-bar-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 12px;
+  cursor:pointer;
+  user-select:none;
+  font-size:12px;
+  font-weight:700;
+  color:#1e3a8a;
+  min-height:30px;
+}
+.assess-bar-header:hover{background:#dbeafe;}
+.assess-bar-title{white-space:nowrap;}
+.assess-preview{
+  font-weight:normal;
+  font-size:11px;
+  color:#4b5563;
+  flex:1;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.assess-bar-body{
+  padding:6px 12px 8px;
+  display:none;
+}
+.assess-bar-body.open{display:block;}
+.assess-textarea{
+  width:100%;
+  box-sizing:border-box;
+  font-family:'Courier New',monospace;
+  font-size:11px;
+  line-height:1.5;
+  border:1px solid #bfdbfe;
+  border-radius:6px;
+  padding:8px;
+  height:150px;
+  resize:vertical;
+  background:#fff;
+  color:#1e3a8a;
+}
+@media print{
+  html,body{height:auto;overflow:visible;}
+  .app{height:auto;box-shadow:none;}
+  .tab-body{overflow:visible;height:auto;}
+  .tab-panel{display:block!important;height:auto;overflow:visible;}
+  button{display:none;}
+  .tab-nav{display:none;}
+  .app-footer{display:none;}
+  .assess-bar{display:none;}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- App Header: compact title + inline summary -->
+  <div class="app-header">
+    <div class="app-title">VTE Prophylaxis Assessment &middot; Mae Fah Luang University &middot; Caprini Auto Calculator</div>
+    <div class="summary-bar">
+      <div class="s-block">
+        <span class="s-lbl">Caprini Score</span>
+        <span class="s-score" id="totalScore">0</span>
+      </div>
+      <span class="s-sep">|</span>
+      <div class="s-block">
+        <span class="s-lbl">VTE Risk</span>
+        <div>
+          <span id="vteRiskBadge" class="badge blue">Very low risk</span>
+          <span id="vteRiskText" style="font-size:10px;color:#4b5563;margin-left:5px;">0 คะแนน: &lt;0.5%</span>
+        </div>
+      </div>
+      <span class="s-sep">|</span>
+      <div class="s-block">
+        <span class="s-lbl">Bleeding Risk</span>
+        <span id="bleedBadge" class="badge green">ไม่พบปัจจัยเสี่ยงสูง</span>
+      </div>
+      <span class="s-sep">|</span>
+      <div class="s-block">
+        <span class="s-lbl">Contraindications</span>
+        <span id="contraBadge" style="font-size:10px;color:#4b5563;">ยังไม่พบข้อห้ามสำคัญ</span>
+      </div>
+      <span class="s-sep">|</span>
+      <div class="s-block" style="flex:1;min-width:200px;">
+        <span class="s-lbl">คำแนะนำจากระบบ</span>
+        <span class="s-rec" id="recommendation">No thromboprophylaxis; encourage early ambulation.</span>
+      </div>
+    </div>
+    <div class="warn-bar" id="clinicalWarnings"></div>
+  </div>
+
+  <!-- Tab navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(0,this)">Caprini Risk Assessment Model</button>
+    <button class="tab-btn" onclick="switchTab(1,this)">Bleeding Risk &amp; Contraindications</button>
+    <button class="tab-btn" onclick="switchTab(2,this)">Clinical Context</button>
+    <button class="tab-btn" onclick="switchTab(3,this)">Drug Choice &amp; Duration</button>
+    <button class="tab-btn" onclick="switchTab(4,this)">Prophylaxis Management</button>
+    <button class="tab-btn" onclick="switchTab(5,this)">Documentation</button>
+  </div>
+
+  <!-- Tab body -->
+  <div class="tab-body">
+
+    <!-- TAB 0: Caprini RAM -->
+    <div class="tab-panel active" id="tab-0">
+      <div class="grid-4">
+        <div class="card score1">
+          <h3>1 คะแนน</h3>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> อายุ 40–60 ปี</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ผ่าตัดเล็ก</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> BMI &gt; 25 kg/m²</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ขาบวม</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> เส้นเลือดขอด</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ตั้งครรภ์หรือระยะหลังคลอด</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> มีประวัติแท้งบ่อย</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ใช้ยาคุมกำเนิดหรือ HRT</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ติดเชื้อในกระแสเลือด &lt;1 เดือน</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ตรวจพบการทำงานปอดผิดปกติ</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ประวัติ acute MI</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ประวัติ heart failure &lt;1 เดือน</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> Inflammatory bowel disease</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ผู้ป่วยติดเตียง / limited mobility</label>
+          <label><input type="checkbox" class="caprini" value="1" data-group="1"> ความเสี่ยงอื่น ๆ</label>
+          <label>ระบุ: <input type="text" id="otherRisk"></label>
+          <p class="small">รวมกลุ่ม 1 คะแนน: <span id="sum1">0</span></p>
+        </div>
+        <div class="card score2">
+          <h3>2 คะแนน</h3>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> อายุ 61–74 ปี</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> ผ่าตัดส่องกล้องข้อกระดูก</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> ผ่าตัดใหญ่ &gt;45 นาที</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> ผ่าตัดผ่านกล้อง &gt;45 นาที</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> ผ่าตัดมะเร็ง</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> นอนติดเตียง &gt;72 ชั่วโมง</label>
+          <label><input type="checkbox" class="caprini" value="2" data-group="2"> Central venous access / catheter</label>
+          <p class="small">รวมกลุ่ม 2 คะแนน: <span id="sum2">0</span></p>
+        </div>
+        <div class="card score3">
+          <h3>3 คะแนน</h3>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> อายุ ≥75 ปี</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> ประวัติ VTE / ลิ่มเลือดอุดตัน</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> ประวัติ VTE ในครอบครัว</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Factor V Leiden</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Prothrombin 20210A</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Lupus anticoagulant</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Anticardiolipin antibodies</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Homocysteine ในเลือดสูง</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Heparin-induced thrombocytopenia</label>
+          <label><input type="checkbox" class="caprini" value="3" data-group="3"> Congenital or acquired thrombophilia</label>
+          <p class="small">รวมกลุ่ม 3 คะแนน: <span id="sum3">0</span></p>
+        </div>
+        <div class="card score5">
+          <h3>5 คะแนน</h3>
+          <label><input type="checkbox" class="caprini" value="5" data-group="5"> Stroke &lt;1 เดือน</label>
+          <label><input type="checkbox" class="caprini" value="5" data-group="5"> Elective arthroplasty</label>
+          <label><input type="checkbox" class="caprini" value="5" data-group="5"> กระดูกสะโพกหรือกระดูกขาหัก</label>
+          <label><input type="checkbox" class="caprini" value="5" data-group="5"> Acute spinal cord injury</label>
+          <p class="small">รวมกลุ่ม 5 คะแนน: <span id="sum5">0</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: Bleeding Risk & Contraindications -->
+    <div class="tab-panel" id="tab-1">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;padding:4px 2px 2px;">Bleeding Risk</div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>ปัจจัยเสี่ยงทั่วไป</h3>
+          <label><input type="checkbox" class="bleed"> เลือดออกไม่หยุด / active bleeding</label>
+          <label><input type="checkbox" class="bleed"> มีประวัติเลือดออกมากมาก่อน</label>
+          <label><input type="checkbox" class="bleed"> เคยมีประวัติเลือดออกมาก แต่ยังไม่เคยได้รับการรักษา</label>
+          <label><input type="checkbox" class="bleed"> โรคไตหรือตับรุนแรง</label>
+          <label><input type="checkbox" class="bleed"> เกล็ดเลือดต่ำ</label>
+          <label><input type="checkbox" class="bleed"> โรคเส้นเลือดสมองตีบ/แตกฉับพลัน</label>
+          <label><input type="checkbox" class="bleed"> ความดันโลหิตสูงที่ยังควบคุมไม่ได้</label>
+          <label><input type="checkbox" class="bleed"> ประวัติเจาะน้ำไขสันหลัง / Epidural/Spinal ภายใน 4 ชม. ก่อน หรือ 12 ชม. หลังจากนี้</label>
+          <label><input type="checkbox" class="bleed"> ใช้ anticoagulant / antiplatelet / thrombolytic ประจำ</label>
+        </div>
+        <div class="card">
+          <h3>ปัจจัยเสี่ยงเฉพาะหัตถการ / ชนิดการผ่าตัด</h3>
+          <label><input type="checkbox" class="bleed"> ผ่าตัดในช่องท้อง / ตับ / หัวใจและทรวงอก</label>
+          <label><input type="checkbox" class="bleed"> ผ่าตัดเปิดกะโหลกศีรษะ / กระดูกสันหลัง / อุบัติเหตุที่กระดูกสันหลัง</label>
+          <div class="alert amber">
+            หากพบปัจจัยเสี่ยงข้อใดข้อหนึ่ง ถือว่าเป็นกลุ่ม "เสี่ยงสูง" ต่อ major bleeding — ควรหลีกเลี่ยง pharmacoprophylaxis จนกว่าความเสี่ยงลดลง
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;padding:8px 2px 2px;border-top:1px solid #e2e8f0;margin-top:6px;">Contraindications</div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>ข้อห้ามหรือข้อควรระวังในการใช้ IPC</h3>
+          <label><input type="checkbox" class="ipcContra"> แพ้อุปกรณ์ที่ใช้พันขา</label>
+          <label><input type="checkbox" class="ipcContra"> เบาหวานรุนแรงร่วมกับ neuropathy หรือผิวหนังอักเสบรุนแรง/ขาดเลือด</label>
+          <label><input type="checkbox" class="ipcContra"> Peripheral arterial disease</label>
+          <label><input type="checkbox" class="ipcContra"> Arteriosclerosis</label>
+          <label><input type="checkbox" class="ipcContra"> Severe peripheral neuropathy</label>
+          <label><input type="checkbox" class="ipcContra"> ขาบวมมาก หรือ pulmonary edema</label>
+        </div>
+        <div class="card">
+          <h3>ข้อห้ามใช้ Pharmacoprophylaxis</h3>
+          <label><input type="checkbox" class="pharmContra"> Concurrent antiplatelet / therapeutic anticoagulant / thrombolytic</label>
+          <label><input type="checkbox" class="pharmContra"> Allergy to heparin / LMWH</label>
+          <label><input type="checkbox" class="pharmContra"> INR &gt; 1.5 หรือ Platelet &lt; 75,000/mm³</label>
+          <label><input type="checkbox" class="pharmContra"> Untreated bleeding disorder</label>
+          <label><input type="checkbox" class="pharmContra"> Severe renal disease, CrCl &lt;30 mL/min</label>
+          <label><input type="checkbox" class="pharmContra"> Active bleeding anywhere</label>
+          <label><input type="checkbox" class="pharmContra"> Prior peri-procedural bleeding</label>
+          <label><input type="checkbox" class="pharmContra"> Uncontrolled hypertension, BP ≥180/110 mmHg</label>
+          <label><input type="checkbox" class="pharmContra"> Lumbar puncture / epidural / spinal within next 12 h (24 h if traumatic)</label>
+          <label><input type="checkbox" class="pharmContra"> GI/GU bleed หรือ hemorrhagic stroke ภายใน 3 เดือน</label>
+          <label><input type="checkbox" class="pharmContra"> Recent intraocular / spinal / intracranial surgery</label>
+          <label><input type="checkbox" class="pharmContra"> Severe trauma to head / spinal / extremities with hemorrhage &lt;4 weeks</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Clinical Context -->
+    <div class="tab-panel" id="tab-2">
+      <div class="grid-3">
+        <label><input type="checkbox" id="contextCancer"> Abdominal / pelvic cancer surgery</label>
+        <label><input type="checkbox" id="contextHip"> Hip arthroplasty / hip fracture surgery</label>
+        <label><input type="checkbox" id="contextKnee"> Knee arthroplasty</label>
+        <label><input type="checkbox" id="contextOtherLimited"> Other surgery แต่ยังเดินไม่ได้ตามปกติ</label>
+        <label><input type="checkbox" id="contextCrclLow"> CrCl &lt;30 mL/min</label>
+        <label><input type="checkbox" id="contextRejectInjection"> ปฏิเสธยาฉีด / injection not feasible</label>
+      </div>
+    </div>
+
+    <!-- TAB 3: Drug Choice & Duration -->
+    <div class="tab-panel" id="tab-3">
+      <div class="alert blue">
+        รายการด้านล่างเป็น "ตัวเลือกให้แพทย์พิจารณา" ไม่ใช่ automatic order — ควรตรวจ renal function, bleeding risk, neuraxial anesthesia timing, drug interaction, indication ตามชนิดผ่าตัด และ local protocol ทุกครั้ง
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>ตัวเลือกยา</h3>
+          <label><input type="radio" name="drug" value="Enoxaparin 40 mg SC OD"> Enoxaparin 40 mg SC OD</label>
+          <label><input type="radio" name="drug" value="Heparin 5,000 IU SC BID"> Heparin 5,000 IU SC BID (CrCl &lt;30 หรือหลีกเลี่ยง LMWH)</label>
+          <label><input type="radio" name="drug" value="Rivaroxaban 10 mg PO OD"> Rivaroxaban 10 mg PO OD</label>
+          <label><input type="radio" name="drug" value="Apixaban 2.5 mg PO BID"> Apixaban 2.5 mg PO BID</label>
+          <label><input type="radio" name="drug" value="ASA 81 mg PO OD"> ASA 81 mg PO OD</label>
+          <label><input type="radio" name="drug" value="ASA 81 mg PO BID"> ASA 81 mg PO BID</label>
+          <label><input type="radio" name="drug" value="Fondaparinux 2.5 mg SC OD"> Fondaparinux 2.5 mg SC OD</label>
+          <label><input type="radio" name="drug" value="Bemiparin 2,500 IU SC OD"> Bemiparin 2,500 IU SC OD</label>
+        </div>
+        <div class="card">
+          <h3>Medication safety check</h3>
+          <div id="drugSafety">ยังไม่ได้เลือกยา</div>
+          <label style="margin-top:8px;">หมายเหตุ / เหตุผลที่ปรับจาก protocol
+            <textarea id="drugNote"></textarea>
+          </label>
+        </div>
+      </div>
+      <h2 style="margin-top:12px;">Duration of prophylaxis</h2>
+      <div id="durationAdvice" class="card">
+        ระบบจะแสดงคำแนะนำเมื่อเลือก clinical context ในแท็บ Clinical Context
+      </div>
+    </div>
+
+    <!-- TAB 4: Summary Table -->
+    <div class="tab-panel" id="tab-4">
+      <table>
+        <thead>
+          <tr>
+            <th>Caprini score</th>
+            <th>Estimated symptomatic VTE risk</th>
+            <th>กรณี bleeding risk ต่ำ</th>
+            <th>กรณี bleeding risk สูง</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0</td>
+            <td>Very low risk (&lt;0.5%)</td>
+            <td>No thromboprophylaxis; early ambulation</td>
+            <td>No pharmacoprophylaxis; clinical review</td>
+          </tr>
+          <tr>
+            <td>1–2</td>
+            <td>Low risk (~1.5%)</td>
+            <td>Mechanical prophylaxis เช่น IPC</td>
+            <td>Mechanical prophylaxis เช่น IPC หากไม่มีข้อห้าม</td>
+          </tr>
+          <tr>
+            <td>3–4</td>
+            <td>Moderate risk (~3.0%)</td>
+            <td>IPC หรือ pharmacoprophylaxis</td>
+            <td>IPC; พิจารณายาเมื่อ bleeding risk ลดลง</td>
+          </tr>
+          <tr>
+            <td>≥5</td>
+            <td>High risk (~6.0%)</td>
+            <td>Pharmacoprophylaxis ร่วมกับ mechanical prophylaxis หากเหมาะสม</td>
+            <td>IPC ก่อน; เมื่อ bleeding risk ลดลงจึงพิจารณา pharmacoprophylaxis</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 5: Documentation -->
+    <div class="tab-panel" id="tab-5">
+      <h2>ข้อมูลผู้ป่วย</h2>
+      <div class="grid-3">
+        <label>ชื่อ-สกุล <input type="text" id="patientName"></label>
+        <label>HN <input type="text" id="hn"></label>
+        <label>Ward / Unit <input type="text" id="ward"></label>
+        <label>วันที่ประเมิน <input type="date" id="assessDate"></label>
+        <label>เวลา <input type="time" id="assessTime"></label>
+        <label>ผู้ประเมิน <input type="text" id="assessor"></label>
+      </div>
+      <h2 style="margin-top:10px;">Documentation</h2>
+      <div class="grid-3">
+        <label>Physician signature <input type="text" id="physicianSign"></label>
+        <label>Date / Time <input type="text" id="signDateTime"></label>
+        <label>วันผ่าตัด <input type="date" id="operationDate"></label>
+        <label>วันที่ใส่ pneumatic cuff <input type="date" id="ipcStart"></label>
+        <label>วันที่ถอด pneumatic cuff <input type="date" id="ipcStop"></label>
+        <label>ภาวะแทรกซ้อนหลังใส่ IPC <input type="text" id="ipcComplication" placeholder="ไม่มี / มี ระบุ"></label>
+      </div>
+      <div class="actions">
+        <button onclick="window.print()">พิมพ์ / Save as PDF</button>
+        <button class="secondary" onclick="exportSummary()">Export summary text</button>
+        <button class="danger" onclick="resetForm()">ล้างข้อมูลทั้งหมด</button>
+      </div>
+    </div>
+
+  </div><!-- end tab-body -->
+
+  <!-- Assessment Bar -->
+  <div class="assess-bar">
+    <div class="assess-bar-header" onclick="toggleAssessBar()">
+      <span class="assess-bar-title">Assessment Note</span>
+      <span class="assess-preview" id="assessPreview">Caprini: 0 — Very low risk — ยังไม่ได้เลือกยา</span>
+      <button onclick="event.stopPropagation();copyAssessment(this)" style="flex-shrink:0;margin:0;padding:3px 10px;font-size:11px;">Copy Assessment</button>
+      <span id="assessToggleIcon" style="flex-shrink:0;font-size:10px;color:#1e3a8a;min-width:16px;text-align:center;">▲</span>
+    </div>
+    <div class="assess-bar-body" id="assessBarBody">
+      <textarea id="assessTextarea" class="assess-textarea" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- App Footer -->
+  <div class="app-footer">
+    <b>Clinical governance note:</b> แบบฟอร์มนี้ช่วยคำนวณและช่วยเตือนตาม MFU form และ guideline หลัก ไม่แทนที่ clinical judgment, local protocol, perioperative anesthesia policy หรือคำสั่งแพทย์เจ้าของไข้ &nbsp;|&nbsp;
+    Evidence: Caprini RAM, CHEST/ACCP, ASH 2019, ASCO 2023 update.
+  </div>
+
+</div><!-- end app -->
+
+<script>
+function qsAll(selector){ return Array.from(document.querySelectorAll(selector)); }
+
+function switchTab(index, btn){
+  qsAll('.tab-panel').forEach((p,i)=>{
+    p.classList.toggle('active', i === index);
+  });
+  qsAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active', i === index);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function calculate(){
+  let total = 0;
+  let sums = {1:0, 2:0, 3:0, 5:0};
+
+  qsAll('.caprini:checked').forEach(cb=>{
+    const val = Number(cb.value);
+    const group = cb.dataset.group;
+    total += val;
+    sums[group] += val;
+  });
+
+  document.getElementById('sum1').textContent = sums[1];
+  document.getElementById('sum2').textContent = sums[2];
+  document.getElementById('sum3').textContent = sums[3];
+  document.getElementById('sum5').textContent = sums[5];
+  document.getElementById('totalScore').textContent = total;
+
+  const hasBleed = qsAll('.bleed:checked').length > 0;
+  const hasPharmContra = qsAll('.pharmContra:checked').length > 0;
+  const hasIpcContra = qsAll('.ipcContra:checked').length > 0;
+
+  let riskBadge = document.getElementById('vteRiskBadge');
+  let riskText = document.getElementById('vteRiskText');
+  let recommendation = '';
+  let riskClass = 'badge blue';
+
+  if(total === 0){
+    riskBadge.textContent = 'Very low risk';
+    riskText.textContent = '0 คะแนน: <0.5%';
+    riskClass = 'badge green';
+  }else if(total <= 2){
+    riskBadge.textContent = 'Low risk';
+    riskText.textContent = '1–2 คะแนน: ประมาณ 1.5%';
+    riskClass = 'badge blue';
+  }else if(total <= 4){
+    riskBadge.textContent = 'Moderate risk';
+    riskText.textContent = '3–4 คะแนน: ประมาณ 3.0%';
+    riskClass = 'badge amber';
+  }else{
+    riskBadge.textContent = 'High risk';
+    riskText.textContent = '≥5 คะแนน: ประมาณ 6.0%';
+    riskClass = 'badge red';
+  }
+  riskBadge.className = riskClass;
+
+  const bleedBadge = document.getElementById('bleedBadge');
+  if(hasBleed){
+    bleedBadge.textContent = 'เสี่ยงสูงต่อ major bleeding';
+    bleedBadge.className = 'badge red';
+  }else{
+    bleedBadge.textContent = 'ไม่พบปัจจัยเสี่ยงสูง';
+    bleedBadge.className = 'badge green';
+  }
+
+  const contraText = [];
+  if(hasPharmContra) contraText.push('พบข้อห้าม/ข้อควรระวังต่อ pharmacoprophylaxis');
+  if(hasIpcContra) contraText.push('พบข้อห้าม/ข้อควรระวังต่อ IPC');
+  document.getElementById('contraBadge').textContent = contraText.length ? contraText.join(' | ') : 'ยังไม่พบข้อห้ามสำคัญ';
+
+  if(total === 0){
+    recommendation = 'No thromboprophylaxis; encourage early ambulation.';
+  }else if(total <= 2){
+    recommendation = hasIpcContra
+      ? 'Low VTE risk แต่มีข้อห้าม/ข้อควรระวังต่อ IPC: ให้ early ambulation และ clinical review'
+      : 'Mechanical prophylaxis เช่น IPC; encourage early ambulation.';
+  }else if(total <= 4){
+    if(hasBleed || hasPharmContra){
+      recommendation = hasIpcContra
+        ? 'Moderate VTE risk แต่มีทั้ง bleeding/pharmacologic concern และ IPC concern: ควรให้แพทย์เจ้าของไข้/วิสัญญี/อายุรแพทย์ร่วมประเมิน'
+        : 'IPC เป็นหลัก; พิจารณา pharmacoprophylaxis เมื่อ bleeding risk ลดลงและไม่มีข้อห้าม';
+    }else{
+      recommendation = 'IPC หรือ pharmacoprophylaxis ตามชนิดผ่าตัดและ local protocol';
+    }
+  }else{
+    if(hasBleed || hasPharmContra){
+      recommendation = hasIpcContra
+        ? 'High VTE risk แต่มีข้อจำกัดทั้ง pharmacoprophylaxis และ IPC: ต้อง individualized plan และปรึกษาผู้เชี่ยวชาญ'
+        : 'IPC ก่อน; เมื่อ bleeding risk ลดลงหรือข้อห้ามหมดไป ให้พิจารณา pharmacoprophylaxis เพิ่ม';
+    }else{
+      recommendation = hasIpcContra
+        ? 'High VTE risk: pharmacoprophylaxis เป็นหลัก; IPC ใช้ไม่ได้/ต้องระวัง'
+        : 'Pharmacoprophylaxis ร่วมกับ mechanical prophylaxis เช่น IPC หากไม่มีข้อห้าม';
+    }
+  }
+  document.getElementById('recommendation').textContent = recommendation;
+
+  updateWarnings(total, hasBleed, hasPharmContra, hasIpcContra);
+  updateDuration();
+  updateDrugSafety();
+  updateAssessBar();
+}
+
+function updateWarnings(total, hasBleed, hasPharmContra, hasIpcContra){
+  const chips = [];
+  if(total >= 5 && !hasBleed && !hasPharmContra){
+    chips.push('<span class="warn-chip red">⚠ High VTE risk: ต้องมี active prophylaxis plan</span>');
+  }
+  if(hasBleed){
+    chips.push('<span class="warn-chip amber">⚠ Bleeding risk high: ชะลอ pharmacoprophylaxis</span>');
+  }
+  if(hasPharmContra){
+    chips.push('<span class="warn-chip red">⚠ Pharmacoprophylaxis contraindicated: ต้อง review ก่อนสั่งยา</span>');
+  }
+  if(hasIpcContra){
+    chips.push('<span class="warn-chip amber">⚠ IPC precaution: ตรวจ perfusion ก่อนใช้</span>');
+  }
+  document.getElementById('clinicalWarnings').innerHTML = chips.join('');
+}
+
+function updateDuration(){
+  const cancer = document.getElementById('contextCancer').checked;
+  const hip = document.getElementById('contextHip').checked;
+  const knee = document.getElementById('contextKnee').checked;
+  const otherLimited = document.getElementById('contextOtherLimited').checked;
+  const rejectInjection = document.getElementById('contextRejectInjection').checked;
+  const crclLow = document.getElementById('contextCrclLow').checked;
+
+  let lines = [];
+
+  if(cancer){
+    lines.push('<b>Abdominal / pelvic cancer surgery:</b> พิจารณา extended prophylaxis 28 วันหลังผ่าตัด โดย LMWH ยังเป็นตัวเลือกมาตรฐาน; apixaban/rivaroxaban อาจเป็นตัวเลือก extended prophylaxis ในผู้ป่วย cancer surgery บางรายตาม guideline update และ local protocol');
+  }
+  if(hip){
+    lines.push('<b>Hip arthroplasty / hip fracture surgery:</b> พิจารณา prophylaxis ประมาณ 35 วันหลังผ่าตัด หากไม่มีข้อห้าม');
+  }
+  if(knee){
+    lines.push('<b>Knee arthroplasty:</b> พิจารณา prophylaxis อย่างน้อย 10–14 วันหลังผ่าตัด หากไม่มีข้อห้าม');
+  }
+  if(otherLimited){
+    lines.push('<b>Other surgery with persistent limited ambulation:</b> หาก VTE risk ปานกลางหรือสูง พิจารณาให้ prophylaxis ต่อ 10–14 วัน หรือจน mobility ดีขึ้นตาม local protocol');
+  }
+  if(crclLow){
+    lines.push('<b>CrCl &lt;30 mL/min:</b> ระวัง LMWH/DOAC accumulation; UFH หรือ dose adjustment ตาม renal protocol อาจเหมาะสมกว่า');
+  }
+  if(rejectInjection){
+    lines.push('<b>Injection not feasible:</b> DOAC/ASA ไม่ควรเลือกโดยอัตโนมัติ ต้องพิจารณาชนิดผ่าตัด indication bleeding risk renal function และ drug interaction');
+  }
+
+  if(lines.length === 0){
+    lines.push('ยังไม่ได้เลือก clinical context; ใช้คำแนะนำพื้นฐานตาม Caprini score, bleeding risk และ local protocol');
+  }
+
+  document.getElementById('durationAdvice').innerHTML = '<ul><li>' + lines.join('</li><li>') + '</li></ul>';
+}
+
+function updateDrugSafety(){
+  const selected = document.querySelector('input[name="drug"]:checked');
+  const hasBleed = qsAll('.bleed:checked').length > 0;
+  const hasPharmContra = qsAll('.pharmContra:checked').length > 0;
+  const crclLow = document.getElementById('contextCrclLow').checked;
+  const cancer = document.getElementById('contextCancer').checked;
+  const hip = document.getElementById('contextHip').checked;
+  const knee = document.getElementById('contextKnee').checked;
+
+  if(!selected){
+    document.getElementById('drugSafety').innerHTML = 'ยังไม่ได้เลือกยา';
+    return;
+  }
+
+  const drug = selected.value;
+  let msg = '<b>เลือก:</b> ' + drug + '<br>';
+
+  if(hasBleed || hasPharmContra){
+    msg += '<span style="color:#b91c1c"><b>คำเตือน:</b> พบ bleeding risk หรือ pharmacoprophylaxis contraindication ควรหยุดและให้แพทย์ทบทวนก่อนสั่งยา</span><br>';
+  }
+
+  if(drug.includes('Enoxaparin') && crclLow){
+    msg += '<span style="color:#92400e"><b>Renal warning:</b> CrCl &lt;30 mL/min ต้องปรับขนาดยา/พิจารณา UFH ตาม protocol</span><br>';
+  }
+
+  if(drug.includes('Heparin')){
+    msg += 'เหมาะเป็นตัวเลือกเมื่อ renal impairment หรือหลีกเลี่ยง LMWH; ตรวจ platelet และ HIT risk ตามบริบท<br>';
+  }
+
+  if(drug.includes('Rivaroxaban') || drug.includes('Apixaban')){
+    if(cancer){
+      msg += 'ใน cancer surgery: ใช้เป็น extended prophylaxis option ได้ในบางรายตาม guideline update แต่ strength of recommendation ยังไม่แข็งแรง ต้องประเมิน bleeding risk, renal function และ interaction<br>';
+    }else if(hip || knee){
+      msg += 'ใน hip/knee arthroplasty: DOAC อาจใช้ได้ตาม orthopedic protocol และข้อบ่งชี้ของยา<br>';
+    }else{
+      msg += '<span style="color:#92400e"><b>Scope warning:</b> ไม่ควรใช้ DOAC เป็น routine prophylaxis สำหรับ surgery ทุกชนิดโดยไม่มี indication ชัดเจน</span><br>';
+    }
+  }
+
+  if(drug.includes('ASA')){
+    if(hip || knee){
+      msg += 'ASA อาจเป็นตัวเลือกในบาง orthopedic protocol โดยต้องประเมิน VTE/bleeding risk รายบุคคล<br>';
+    }else{
+      msg += '<span style="color:#92400e"><b>Scope warning:</b> ASA ไม่ใช่ first-line ทั่วไปสำหรับ abdominal/pelvic cancer surgery; ใช้เมื่อมีเหตุผลและ local protocol รองรับ</span><br>';
+    }
+  }
+
+  if(drug.includes('Fondaparinux')){
+    msg += 'ใช้เมื่อ heparin/LMWH ใช้ไม่ได้ในบางบริบท แต่ต้องระวัง renal impairment และ bleeding risk<br>';
+  }
+
+  document.getElementById('drugSafety').innerHTML = msg;
+}
+
+function resetForm(){
+  if(!confirm('ต้องการล้างข้อมูลทั้งหมดหรือไม่?')) return;
+  qsAll('input, textarea').forEach(el=>{
+    if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+    else el.value = '';
+  });
+  calculate();
+}
+
+function exportSummary(){
+  const name = document.getElementById('patientName').value || '-';
+  const hn = document.getElementById('hn').value || '-';
+  const score = document.getElementById('totalScore').textContent;
+  const risk = document.getElementById('vteRiskBadge').textContent + ' ' + document.getElementById('vteRiskText').textContent;
+  const bleed = document.getElementById('bleedBadge').textContent;
+  const rec = document.getElementById('recommendation').textContent;
+  const drug = document.querySelector('input[name="drug"]:checked')?.value || 'not selected';
+
+  const text =
+`VTE Prophylaxis Assessment Summary
+Patient: ${name}
+HN: ${hn}
+Caprini score: ${score}
+VTE risk: ${risk}
+Major bleeding risk: ${bleed}
+Recommendation: ${rec}
+Selected drug: ${drug}
+
+Note: This form supports documentation and risk-based decision-making. Final order requires clinical judgment and local protocol.`;
+
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('คัดลอก summary ไปยัง clipboard แล้ว');
+  }).catch(()=>{
+    alert(text);
+  });
+}
+
+var assessBarOpen = false;
+
+function toggleAssessBar(){
+  assessBarOpen = !assessBarOpen;
+  document.getElementById('assessBarBody').classList.toggle('open', assessBarOpen);
+  document.getElementById('assessToggleIcon').textContent = assessBarOpen ? '▼' : '▲';
+  if(assessBarOpen){
+    document.getElementById('assessTextarea').value = generateAssessmentText();
+  }
+}
+
+function generateAssessmentText(){
+  var score = document.getElementById('totalScore').textContent;
+  var total = parseInt(score) || 0;
+  var riskLabel = document.getElementById('vteRiskBadge').textContent;
+  var riskText = document.getElementById('vteRiskText').textContent;
+  var bleedStatus = document.getElementById('bleedBadge').textContent;
+  var rec = document.getElementById('recommendation').textContent;
+  var selectedDrug = document.querySelector('input[name="drug"]:checked');
+  var drug = selectedDrug ? selectedDrug.value : 'ยังไม่ได้เลือก';
+  var drugNoteEl = document.getElementById('drugNote');
+  var drugNote = drugNoteEl ? drugNoteEl.value.trim() : '';
+
+  var groups = {1:[], 2:[], 3:[], 5:[]};
+  qsAll('.caprini:checked').forEach(function(cb){
+    var g = cb.dataset.group;
+    var text = cb.parentElement.textContent.trim();
+    if(text === 'ความเสี่ยงอื่น ๆ'){
+      var otherEl = document.getElementById('otherRisk');
+      var ov = otherEl ? otherEl.value.trim() : '';
+      if(ov) text += ' (' + ov + ')';
+    }
+    groups[g].push(text);
+  });
+
+  var bleedFactors = qsAll('.bleed:checked').map(function(cb){ return cb.parentElement.textContent.trim(); });
+  var ipcFactors = qsAll('.ipcContra:checked').map(function(cb){ return cb.parentElement.textContent.trim(); });
+  var pharmFactors = qsAll('.pharmContra:checked').map(function(cb){ return cb.parentElement.textContent.trim(); });
+
+  var riskPct = riskText.indexOf(':') >= 0 ? riskText.split(':')[1].trim() : riskText;
+  var LINE = '─────────────────────────────────────────────────';
+  var parts = [];
+
+  parts.push('VTE Prophylaxis Assessment — MFU');
+  parts.push(LINE);
+  parts.push('Caprini Score: ' + score + ' คะแนน — ' + riskLabel + ' (' + riskPct + ')');
+
+  var hasFactors = [1,2,3,5].some(function(g){ return groups[g].length > 0; });
+  if(hasFactors){
+    parts.push('');
+    parts.push('ปัจจัยเสี่ยง Caprini ที่เลือก:');
+    [1,2,3,5].forEach(function(g){
+      if(groups[g].length > 0){
+        parts.push('  [' + g + ' คะแนน] ' + groups[g].join(' / '));
+      }
+    });
+  }
+
+  parts.push('');
+  parts.push('Bleeding Risk: ' + bleedStatus);
+  if(bleedFactors.length > 0){
+    bleedFactors.forEach(function(f){ parts.push('  • ' + f); });
+  }
+
+  parts.push('');
+  if(ipcFactors.length > 0){
+    parts.push('ข้อห้าม IPC:');
+    ipcFactors.forEach(function(f){ parts.push('  • ' + f); });
+  } else {
+    parts.push('ข้อห้าม IPC: ไม่พบ');
+  }
+
+  if(pharmFactors.length > 0){
+    parts.push('ข้อห้าม Pharmacoprophylaxis:');
+    pharmFactors.forEach(function(f){ parts.push('  • ' + f); });
+  } else {
+    parts.push('ข้อห้าม Pharmacoprophylaxis: ไม่พบ');
+  }
+
+  parts.push('');
+  parts.push('Recommendation: ' + rec);
+  if(total <= 2){
+    parts.push('>> No need pharmacoprophylaxis ในรายนี้');
+  }
+  parts.push('Drug ที่เลือก: ' + drug);
+  if(drugNote) parts.push('หมายเหตุ: ' + drugNote);
+  parts.push('');
+  parts.push(LINE);
+
+  return parts.join('\n');
+}
+
+function updateAssessBar(){
+  var score = document.getElementById('totalScore').textContent;
+  var risk = document.getElementById('vteRiskBadge').textContent;
+  var selectedDrug = document.querySelector('input[name="drug"]:checked');
+  var drug = selectedDrug ? selectedDrug.value : 'ยังไม่ได้เลือกยา';
+  document.getElementById('assessPreview').textContent = 'Caprini: ' + score + ' — ' + risk + ' — ' + drug;
+  if(assessBarOpen){
+    document.getElementById('assessTextarea').value = generateAssessmentText();
+  }
+}
+
+function copyAssessment(btn){
+  var text = generateAssessmentText();
+  navigator.clipboard.writeText(text).then(function(){
+    var orig = btn.textContent;
+    btn.textContent = 'คัดลอกแล้ว!';
+    btn.style.background = '#047857';
+    setTimeout(function(){
+      btn.textContent = orig;
+      btn.style.background = '';
+    }, 2000);
+  }).catch(function(){
+    alert(text);
+  });
+}
+
+qsAll('input, textarea, select').forEach(el=>{
+  el.addEventListener('change', calculate);
+  el.addEventListener('keyup', calculate);
+});
+
+qsAll('input[name="drug"]').forEach(function(radio){
+  radio.addEventListener('mousedown', function(){
+    this._wasChecked = this.checked;
+  });
+  radio.addEventListener('click', function(){
+    if(this._wasChecked){
+      this.checked = false;
+      calculate();
+    }
+  });
+});
+
+calculate();
+</script>
+</body>
+</html>
