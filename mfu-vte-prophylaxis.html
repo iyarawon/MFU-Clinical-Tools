@@ -455,6 +455,16 @@ button.danger{background:#b91c1c;}
           </label>
         </div>
       </div>
+      <h2 style="margin-top:12px;">IPC guidance</h2>
+      <div class="card">
+        <ul>
+          <li><b>IPC =</b> Intermittent pneumatic compression, <b>LMWH =</b> low molecular weight heparin, <b>LDUH =</b> low dose unfractionated heparin</li>
+          <li><b>การใส่ IPC:</b> ใช้ cuff ความยาวระดับเข่า ใส่ระหว่างนอนโรงพยาบาลหากยังไม่ได้ขยับตัวหรือควรใส่ขณะนอน ถอด/หยุดใส่เมื่อเดินได้ตามปกติ หรือถอดชั่วคราวเพื่อทำความสะอาดและประเมินผิวหนัง</li>
+          <li><b>การติดตามระหว่างใช้ IPC:</b> ตรวจผิวหนัง สีผิว อุณหภูมิ ปวด/ชา ความแน่นของ cuff และ distal perfusion อย่างน้อยทุกเวร หากพบ ulcer, blister, skin necrosis, ปวด/ชามากขึ้น หรือสงสัย peroneal nerve palsy ให้หยุดใช้ IPC และแจ้งแพทย์ประเมิน</li>
+          <li><b>ก่อนผ่าตัด:</b> หลัง admit แนะนำเริ่ม enoxaparin ตาม protocol หากไม่มีข้อห้าม และหยุดก่อนผ่าตัดอย่างน้อย 12 ชั่วโมง หรือปรับตาม renal function, bleeding risk และ neuraxial anesthesia policy</li>
+          <li><b>หลังผ่าตัด:</b> เริ่มกลับไปให้ enoxaparin เมื่อ hemostasis ดีและไม่มีความเสี่ยงเลือดออกหลังผ่าตัด โดยให้แพทย์ทบทวนเวลาเริ่มยาตามชนิดผ่าตัดและ local protocol</li>
+        </ul>
+      </div>
       <h2 style="margin-top:12px;">Duration of prophylaxis</h2>
       <div id="durationAdvice" class="card">
         ระบบจะแสดงคำแนะนำเมื่อเลือก clinical context ในแท็บ Clinical Context
@@ -682,18 +692,20 @@ function updateDuration(){
   const crclLow = document.getElementById('contextCrclLow').checked;
 
   let lines = [];
+  lines.push('<b>General IPC:</b> ใช้ IPC ขณะผู้ป่วยนอนพักและยังเดินไม่ได้ตามปกติ ถอดเมื่อเดินได้/ทำ skin care และหยุดใช้หากพบ ulcer, blister, skin necrosis หรือสงสัย peroneal nerve palsy');
+  lines.push('<b>Perioperative LMWH timing:</b> หากไม่มีข้อห้าม พิจารณาเริ่ม enoxaparin หลัง admit ตาม protocol, หยุดก่อนผ่าตัดอย่างน้อย 12 ชั่วโมง และเริ่มกลับหลังผ่าตัดเมื่อ hemostasis ดีและ bleeding risk ยอมรับได้');
 
   if(cancer){
-    lines.push('<b>Abdominal / pelvic cancer surgery:</b> พิจารณา extended prophylaxis 28 วันหลังผ่าตัด โดย LMWH ยังเป็นตัวเลือกมาตรฐาน; apixaban/rivaroxaban อาจเป็นตัวเลือก extended prophylaxis ในผู้ป่วย cancer surgery บางรายตาม guideline update และ local protocol');
+    lines.push('<b>Abdominal / pelvic cancer surgery:</b> แนะนำ extended prophylaxis ด้วย enoxaparin 28 วันหลังผ่าตัด หากไม่มีข้อห้าม; DOAC อาจเป็นตัวเลือกในบางรายตาม guideline update และ local protocol');
   }
   if(hip){
-    lines.push('<b>Hip arthroplasty / hip fracture surgery:</b> พิจารณา prophylaxis ประมาณ 35 วันหลังผ่าตัด หากไม่มีข้อห้าม');
+    lines.push('<b>Hip arthroplasty / hip fracture surgery:</b> แนะนำ prophylaxis ประมาณ 35 วันหลังผ่าตัด โดยใช้ enoxaparin หากไม่มีข้อห้าม; พิจารณา DOAC หรือ ASA เฉพาะเมื่อปฏิเสธยาฉีด/มี orthopedic protocol รองรับ');
   }
   if(knee){
-    lines.push('<b>Knee arthroplasty:</b> พิจารณา prophylaxis อย่างน้อย 10–14 วันหลังผ่าตัด หากไม่มีข้อห้าม');
+    lines.push('<b>Knee arthroplasty:</b> แนะนำ prophylaxis อย่างน้อย 10–14 วันหลังผ่าตัด โดยใช้ enoxaparin หากไม่มีข้อห้าม; พิจารณา DOAC หรือ ASA เฉพาะเมื่อปฏิเสธยาฉีด/มี orthopedic protocol รองรับ');
   }
   if(otherLimited){
-    lines.push('<b>Other surgery with persistent limited ambulation:</b> หาก VTE risk ปานกลางหรือสูง พิจารณาให้ prophylaxis ต่อ 10–14 วัน หรือจน mobility ดีขึ้นตาม local protocol');
+    lines.push('<b>All other surgery:</b> หากผู้ป่วยยังไม่สามารถเดินได้ปกติและมี VTE risk ระดับปานกลางหรือสูง พิจารณาให้ prophylaxis ต่อ 10–14 วัน หรือจน mobility ดีขึ้นตาม local protocol');
   }
   if(crclLow){
     lines.push('<b>CrCl &lt;30 mL/min:</b> ระวัง LMWH/DOAC accumulation; UFH หรือ dose adjustment ตาม renal protocol อาจเหมาะสมกว่า');
@@ -702,8 +714,8 @@ function updateDuration(){
     lines.push('<b>Injection not feasible:</b> DOAC/ASA ไม่ควรเลือกโดยอัตโนมัติ ต้องพิจารณาชนิดผ่าตัด indication bleeding risk renal function และ drug interaction');
   }
 
-  if(lines.length === 0){
-    lines.push('ยังไม่ได้เลือก clinical context; ใช้คำแนะนำพื้นฐานตาม Caprini score, bleeding risk และ local protocol');
+  if(!cancer && !hip && !knee && !otherLimited && !crclLow && !rejectInjection){
+    lines.push('ยังไม่ได้เลือก clinical context เฉพาะ; ใช้คำแนะนำพื้นฐานตาม Caprini score, bleeding risk, mobility และ local protocol');
   }
 
   document.getElementById('durationAdvice').innerHTML = '<ul><li>' + lines.join('</li><li>') + '</li></ul>';
@@ -772,6 +784,11 @@ function resetForm(){
   calculate();
 }
 
+function getDurationAdviceText(){
+  const el = document.getElementById('durationAdvice');
+  return el ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+}
+
 function exportSummary(){
   const name = document.getElementById('patientName').value || '-';
   const hn = document.getElementById('hn').value || '-';
@@ -780,6 +797,7 @@ function exportSummary(){
   const bleed = document.getElementById('bleedBadge').textContent;
   const rec = document.getElementById('recommendation').textContent;
   const drug = document.querySelector('input[name="drug"]:checked')?.value || 'not selected';
+  const durationAdvice = getDurationAdviceText();
 
   const text =
 `VTE Prophylaxis Assessment Summary
@@ -790,6 +808,7 @@ VTE risk: ${risk}
 Major bleeding risk: ${bleed}
 Recommendation: ${rec}
 Selected drug: ${drug}
+Duration / IPC advice: ${durationAdvice}
 
 Note: This form supports documentation and risk-based decision-making. Final order requires clinical judgment and local protocol.`;
 
@@ -885,6 +904,7 @@ function generateAssessmentText(){
     parts.push('>> No need pharmacoprophylaxis ในรายนี้');
   }
   parts.push('Drug ที่เลือก: ' + drug);
+  parts.push('Duration / IPC advice: ' + getDurationAdviceText());
   if(drugNote) parts.push('หมายเหตุ: ' + drugNote);
   parts.push('');
   parts.push(LINE);
